@@ -63,6 +63,9 @@ Screambot::Screambot(const Config* config) {
 	});
 
 	m_client->on_message_create([this](const dpp::message_create_t event) {
+		if (event.msg.author.id == m_client->me.id) {
+			return;
+		}
 		if (try_command(event)) {
 			return;
 		}
