@@ -197,8 +197,8 @@ bool Screambot::try_command(const dpp::message_create_t& event) {
 	}
 	std::vector<std::string> args = dpp::utility::tokenize(event.msg.content, " ");
 	if (args[1] == "scream") {
-			event.send("Usage: !screambot scream <channel_id>");
 		if (args.size() != 3) {
+			event.send("AAAAAAAAAAAAA USAGE: !screambot scream <channel_id> AAAAAAAAAAAAAAAAAAA");
 			return true;
 		}
 		dpp::snowflake channel_id = args[2];
@@ -207,7 +207,7 @@ bool Screambot::try_command(const dpp::message_create_t& event) {
 	}
 	if (args[1] == "say") {
 		if (args.size() < 4) {
-			event.send("Usage: !screambot say <channel_id> <message>");
+			event.send("AAAAAAAAAAAAA USAGE: !screambot say <channel_id> <message> AAAAAAAAAAAAAAAAAAA");
 			return true;
 		}
 		dpp::snowflake channel_id = args[2];
