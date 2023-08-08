@@ -1,0 +1,7 @@
+{
+	"token": "AAAAA YOUR DISCORD BOT TOKEN HERE AAAAAAAA",
+	"admin_user_ids": [],
+	"do_not_reply_user_ids": [],
+	"random_reply_chance_percent": 0.5,
+	"rate_limit_ms": 2000
+}
