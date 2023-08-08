@@ -26,6 +26,14 @@ bool contains_scream(const dpp::message& msg) {
 }
 
 
+std::string tag(const dpp::user& user) {
+	if (user.discriminator == 0) {
+		return "@" + user.username;
+	}
+	return "@" + user.format_username();
+}
+
+
 std::string multiply_string(uint64_t n, const std::string& str) {
 	std::stringstream out;
 	while (n--) {
@@ -44,8 +52,7 @@ Screambot::Screambot(const Config* config) {
 	m_client->on_log(dpp::utility::cout_logger());
 
 	m_client->on_ready([this](const dpp::ready_t& /*event*/) {
-		std::cout << "Logged in as " << m_client->me.format_username()
-				  << std::endl;
+		std::cout << "Logged in as " << tag(m_client->me) << std::endl;
 		m_client->set_presence(
 			dpp::presence(
 				dpp::presence_status::ps_online,
@@ -63,17 +70,17 @@ Screambot::Screambot(const Config* config) {
 			return;
 		}
 		if (mentions_user(event.msg, m_client->me.id)) {
-			std::cout << "Pung" << std::endl;
+			std::cout << "Pung by " << tag(event.msg.author) << std::endl;
 			scream(event.msg.channel_id);
 			return;
 		}
 		if (contains_scream(event.msg)) {
-			std::cout << "Screamed at" << std::endl;
+			std::cout << "Screamed at by " << tag(event.msg.author) << std::endl;
 			scream(event.msg.channel_id);
 			return;
 		}
 		if (event.msg.is_dm()) {
-			std::cout << "Received a DM from " << event.msg.author.format_username()
+			std::cout << "Received a DM from " << tag(event.msg.author)
 					  << ": " << event.msg.content << std::endl;
 			scream(event.msg.channel_id);
 			return;
