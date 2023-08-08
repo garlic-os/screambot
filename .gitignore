@@ -1,6 +1,9 @@
 # IDE configuration files
 .vscode/
 
+# Secrets
+config.json
+
 # Prerequisites
 *.d
 
