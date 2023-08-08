@@ -128,9 +128,14 @@ bool Screambot::in_do_not_reply(dpp::snowflake user_id) const {
 
 
 bool Screambot::rate_limited(dpp::snowflake channel_id) const {
-	// See if less than m_config->rate_limit_ms has passed since the last
-	// time Screambot screamed in this channel
-	
+	auto now = std::chrono::system_clock::now();
+	auto last_message_time = m_last_message_times.find(channel_id);
+	if (last_message_time == m_last_message_times.end()) {
+		return false;
+	}
+	auto duration = now - last_message_time->second;
+	return std::chrono::duration_cast<std::chrono::milliseconds>(duration)
+		< std::chrono::milliseconds(m_config->rate_limit_ms);
 };
 
 
