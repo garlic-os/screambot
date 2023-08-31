@@ -17,10 +17,10 @@ class Screambot {
 	virtual ~Screambot();
 
 	void start();
-	void scream(dpp::snowflake channel_id, bool bypass_rate_limit=false);
+	void scream(const dpp::snowflake& channel_id, bool bypass_rate_limit=false);
 	std::string generate_scream() const;
 	bool try_command(const dpp::message_create_t& event);
-	bool is_admin(dpp::snowflake user_id) const;
-	bool in_do_not_reply(dpp::snowflake user_id) const;
-	bool rate_limited(dpp::snowflake channel_id) const;
+	bool is_admin(const dpp::snowflake& user_id) const;
+	bool in_do_not_reply(const dpp::snowflake& user_id) const;
+	bool rate_limited(const dpp::snowflake& channel_id) const;
 };

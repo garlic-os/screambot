@@ -10,7 +10,8 @@
 #include "./rng.hpp"
 
 
-bool mentions_user(const dpp::message& msg, dpp::snowflake user_id) {
+
+bool mentions_user(const dpp::message& msg, const dpp::snowflake& user_id) {
 	for (const auto& mention : msg.mentions) {
 		if (std::get<dpp::user>(mention).id == user_id) {
 			return true;
@@ -107,7 +108,7 @@ void Screambot::start() {
 }
 
 
-void Screambot::scream(dpp::snowflake channel_id, bool bypass_rate_limit) {
+void Screambot::scream(const dpp::snowflake& channel_id, bool bypass_rate_limit) {
 	if (rate_limited(channel_id) && !bypass_rate_limit) {
 		std::cout << "- Failed to scream: rate limited" << std::endl;
 		return;
@@ -119,7 +120,7 @@ void Screambot::scream(dpp::snowflake channel_id, bool bypass_rate_limit) {
 }
 
 
-bool Screambot::is_admin(dpp::snowflake user_id) const {
+bool Screambot::is_admin(const dpp::snowflake& user_id) const {
 	return std::find(
 		m_config->admin_user_ids.begin(),
 		m_config->admin_user_ids.end(),
@@ -128,7 +129,7 @@ bool Screambot::is_admin(dpp::snowflake user_id) const {
 }
 
 
-bool Screambot::in_do_not_reply(dpp::snowflake user_id) const {
+bool Screambot::in_do_not_reply(const dpp::snowflake& user_id) const {
 	return std::find(
 		m_config->do_not_reply_user_ids.begin(),
 		m_config->do_not_reply_user_ids.end(),
@@ -137,10 +138,10 @@ bool Screambot::in_do_not_reply(dpp::snowflake user_id) const {
 };
 
 
-bool Screambot::rate_limited(dpp::snowflake channel_id) const {
 	auto now = std::chrono::system_clock::now();
 	auto last_message_time = m_last_message_times.find(channel_id);
 	if (last_message_time == m_last_message_times.end()) {
+bool Screambot::rate_limited(const dpp::snowflake& channel_id) const {
 		return false;
 	}
 	auto duration = now - last_message_time->second;
