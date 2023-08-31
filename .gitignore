@@ -37,3 +37,6 @@ config.json
 *.out
 *.app
 screambot
+
+# Logs
+*.log
