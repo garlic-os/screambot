@@ -1,4 +1,3 @@
-
 #include <exception>
 #include <fstream>
 #include <iostream>
@@ -30,10 +29,10 @@ int main(int argc, char* argv[]) {
 
 	} catch (std::exception& e) {
 		std::cerr << e.what() << std::endl;
-		return 2;
+		return 1;
 	} catch (...) {
 		std::cerr << "Unknown exception" << std::endl;
-		return 3;
+		return 2;
 	}
 	return 0;
 }
