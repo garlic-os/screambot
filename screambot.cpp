@@ -263,7 +263,7 @@ void Screambot::log_received_message(const dpp::message& message) {
 	dpp::snowflake channel_id = message.channel_id;
 	time_t timestamp = message.sent;
 	std::vector<time_t>* channel_log = get_or_create(m_received_activity_log, channel_id);
-	while (timestamp - (*channel_log)[0] > 10) {
+	while (channel_log->size() > 0 && timestamp - channel_log->front() > 10) {
 		// Only keep entries from the last 10 seconds
 		channel_log->erase(channel_log->begin());
 	}
