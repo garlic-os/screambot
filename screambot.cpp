@@ -9,6 +9,7 @@
 #include "./screambot.hpp"
 #include "./rng.hpp"
 
+using system_clock = std::chrono::system_clock;
 
 
 bool mentions_user(const dpp::message& msg, const dpp::snowflake& user_id) {
@@ -41,6 +42,22 @@ std::string multiply_string(uint64_t n, const std::string& str) {
 		out << str;
 	}
 	return out.str();
+}
+
+
+std::vector<time_t>* get_or_create(
+	std::unordered_map<
+		dpp::snowflake,
+		std::vector<time_t>
+	>& map,
+	const dpp::snowflake& key
+) {
+	try {
+		return &(map.at(key));
+	} catch (std::out_of_range& e) {
+		map[key] = {};
+		return &(map[key]);
+	}
 }
 
 
@@ -89,11 +106,12 @@ Screambot::Screambot(const Config* config) {
 			scream(event.msg.channel_id);
 			return;
 		}
-		if (rng::chance(m_config->random_reply_chance_percent)) {
+		if (random_reply_chance(event.msg.channel_id)) {
 			std::cout << "Randomly decided to scream" << std::endl;
 			scream(event.msg.channel_id);
 			return;
 		}
+		log_received_message(event.msg);
 	});
 }
 
@@ -116,7 +134,7 @@ void Screambot::scream(const dpp::snowflake& channel_id, bool bypass_rate_limit)
 	m_client->message_create(
 		dpp::message(channel_id, generate_scream())
 	);
-	m_last_message_times[channel_id] = std::chrono::system_clock::now();
+	log_sent_message(channel_id);
 }
 
 
@@ -138,15 +156,14 @@ bool Screambot::in_do_not_reply(const dpp::snowflake& user_id) const {
 };
 
 
-	auto now = std::chrono::system_clock::now();
-	auto last_message_time = m_last_message_times.find(channel_id);
-	if (last_message_time == m_last_message_times.end()) {
 bool Screambot::rate_limited(const dpp::snowflake& channel_id) const {
+	if (!m_sent_activity_log.contains(channel_id)) {
 		return false;
 	}
-	auto duration = now - last_message_time->second;
-	return std::chrono::duration_cast<std::chrono::milliseconds>(duration)
-		< std::chrono::milliseconds(m_config->rate_limit_ms);
+	time_t now = system_clock::to_time_t(system_clock::now());
+	time_t last_message_time = m_sent_activity_log.at(channel_id);
+	uint64_t duration = now - last_message_time;  // Unsigned because now is always greater
+	return duration * 1000 < m_config->rate_limit_ms;
 };
 
 
@@ -222,4 +239,40 @@ bool Screambot::try_command(const dpp::message_create_t& event) {
 		return true;
 	}
 	return false;
+}
+
+
+// Decide to reply more often when there has been more activity in the channel.
+// https://www.desmos.com/calculator/49qgowmiun
+bool Screambot::random_reply_chance(const dpp::snowflake& channel_id) const {
+	size_t activity_level = 0;
+	if (m_received_activity_log.contains(channel_id)) {
+		activity_level = m_received_activity_log.at(channel_id).size();
+	}
+	const double a = 2.55;
+	const uint64_t b = 190;
+	double reply_chance = std::min(
+		std::pow(activity_level, a) / b,
+		50.0
+	);
+	return rng::chance(reply_chance);
+}
+
+
+void Screambot::log_received_message(const dpp::message& message) {
+	dpp::snowflake channel_id = message.channel_id;
+	time_t timestamp = message.sent;
+	std::vector<time_t>* channel_log = get_or_create(m_received_activity_log, channel_id);
+	while (timestamp - (*channel_log)[0] > 10) {
+		// Only keep entries from the last 10 seconds
+		channel_log->erase(channel_log->begin());
+	}
+	channel_log->push_back(timestamp);
+}
+
+
+void Screambot::log_sent_message(const dpp::snowflake& channel_id) {
+	const auto now = system_clock::now();
+	const std::time_t timestamp = system_clock::to_time_t(now);
+	m_sent_activity_log[channel_id] = timestamp;
 }
