@@ -207,13 +207,23 @@ std::string Screambot::generate_scream() const {
 
 
 bool Screambot::try_command(const dpp::message_create_t& event) {
-	if (!is_admin(event.msg.author.id)) {
-		return false;
-	}
 	if (!event.msg.content.starts_with("!screambot")) {
 		return false;
 	}
 	std::vector<std::string> args = dpp::utility::tokenize(event.msg.content, " ");
+
+	if (args[1] == "info" || args[1] == "help" || args[1] == "invite") {
+		event.send(
+			generate_scream() +
+			"CODE: https://github.com/garlic-os/screambot-plus-plus\n"
+			"INVITE: https://discord.com/api/oauth2/authorize?client_id=574092583014236160&permissions=274877910016&scope=bot\n"
+		);
+		return true;
+	}
+
+	if (!is_admin(event.msg.author.id)) {
+		return false;
+	}
 	if (args[1] == "scream") {
 		if (args.size() != 3) {
 			event.send("AAAAAAAAAAAAA USAGE: !screambot scream <channel_id> AAAAAAAAAAAAAAAAAAA");
