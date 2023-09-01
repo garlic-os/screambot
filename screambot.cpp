@@ -214,7 +214,7 @@ bool Screambot::try_command(const dpp::message_create_t& event) {
 
 	if (args[1] == "info" || args[1] == "help" || args[1] == "invite") {
 		event.send(
-			generate_scream() +
+			generate_scream() + "\n"
 			"CODE: https://github.com/garlic-os/screambot-plus-plus\n"
 			"INVITE: https://discord.com/api/oauth2/authorize?client_id=574092583014236160&permissions=274877910016&scope=bot\n"
 		);
