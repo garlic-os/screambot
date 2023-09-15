@@ -1,5 +1,10 @@
-# Screambot++
-I rewrote [Screambot](https://github.com/garlic-os/screambot) in C++. Why? Uh...
+# Screambot
+A Discord bot that screams. That's it.
+
+Screams when:
+- Pinged
+- Someone else screams
+- Someone says something (sometimes)
 
 ## Requirements
 `libdpp` — install from https://dpp.dev/
