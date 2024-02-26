@@ -7,7 +7,8 @@ Screams when:
 - Someone says something (sometimes)
 
 ## Requirements
-`libdpp` — install from https://dpp.dev/
+- `boost`
+- `libdpp` — install from https://dpp.dev/
 
 ## Usage
 2. `$ make`
