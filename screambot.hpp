@@ -20,6 +20,7 @@ class Screambot {
 	void log_received_message(const dpp::message& message);
 	void log_sent_message(const dpp::snowflake& channel_id);
 	std::string generate_scream() const;
+	std::string generate_three_word_scream() const;
 	bool try_command(const dpp::message_create_t& event);
 	bool is_admin(const dpp::snowflake& user_id) const;
 	bool in_do_not_reply(const dpp::snowflake& user_id) const;

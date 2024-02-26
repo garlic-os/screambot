@@ -131,9 +131,16 @@ void Screambot::scream(const dpp::snowflake& channel_id, bool bypass_rate_limit)
 		std::cout << "- Failed to scream: rate limited" << std::endl;
 		return;
 	}
-	m_client->message_create(
-		dpp::message(channel_id, generate_scream())
-	);
+	static dpp::snowflake three_word_channel_id = 1031723209701199872;
+	if (channel_id == three_word_channel_id) {
+		m_client->message_create(
+			dpp::message(channel_id, generate_three_word_scream())
+		);
+	} else {
+		m_client->message_create(
+			dpp::message(channel_id, generate_scream())
+		);
+	}
 	log_sent_message(channel_id);
 }
 
@@ -203,6 +210,53 @@ std::string Screambot::generate_scream() const {
 	}
 
 	return result;
+}
+
+
+std::string generate_three_word_scream_inner() {
+	uint64_t body_length = rng::choose_number(1, 100 / 3);
+
+	// Vanilla scream half the time
+	if (rng::chance(50)) {
+		return std::string(body_length, 'A');
+	}
+
+	static std::vector<std::string> body_choices = { "A", "O" };
+	std::string body = multiply_string(body_length, rng::choose_element(body_choices));
+
+	// Chance to wrap the message in one of these Markdown strings
+	static std::vector<std::string> formatter_choices = { "*", "**", "***" };
+	std::string formatter = rng::chance(50)
+		? ""
+		: rng::choose_element(formatter_choices);
+
+	// Chance to put one of these at the end of the message
+	static std::vector<std::string> suffix_choices = { "H", "RGH", "ER" };
+	std::string suffix = rng::chance(50)
+		? ""
+		: rng::choose_element(suffix_choices);
+
+	// Chance to add exclamation points
+	std::string punctuation = rng::chance(50)
+		? ""
+		: multiply_string(rng::choose_number(0, 5), "!");
+
+	std::string result = formatter + body + suffix + punctuation + formatter;
+
+	// Chance for lowercase
+	if (rng::chance(12.5)) {
+		boost::algorithm::to_lower(result);
+	}
+
+	return result;
+}
+
+std::string Screambot::generate_three_word_scream() const {
+	return generate_three_word_scream_inner() +
+		   " " +
+		   generate_three_word_scream_inner() +
+		   " " +
+		   generate_three_word_scream_inner();
 }
 
 
