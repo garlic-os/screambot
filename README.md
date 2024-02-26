@@ -10,6 +10,6 @@ Screams when:
 `libdpp` — install from https://dpp.dev/
 
 ## Usage
-1. Make a copy of `config.example.json` named `config.json` and fill it in
 2. `$ make`
+1. Make a copy of `config.example.json` named `config.json` and fill it in
 3. `$ ./screambot`
