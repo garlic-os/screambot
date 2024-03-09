@@ -134,7 +134,7 @@ void Screambot::scream(const dpp::snowflake& channel_id, bool bypass_rate_limit)
 	static dpp::snowflake three_word_channel_id = 1031723209701199872;
 	if (channel_id == three_word_channel_id) {
 		m_client->message_create(
-			dpp::message(channel_id, generate_three_word_scream())
+			dpp::message(channel_id, generate_six_word_scream())
 		);
 	} else {
 		m_client->message_create(
@@ -213,8 +213,8 @@ std::string Screambot::generate_scream() const {
 }
 
 
-std::string generate_three_word_scream_inner() {
-	uint64_t body_length = rng::choose_number(1, 100 / 3);
+std::string generate_six_word_scream_inner() {
+	uint64_t body_length = rng::choose_number(1, 100 / 6);
 
 	// Vanilla scream half the time
 	if (rng::chance(50)) {
@@ -251,12 +251,18 @@ std::string generate_three_word_scream_inner() {
 	return result;
 }
 
-std::string Screambot::generate_three_word_scream() const {
-	return generate_three_word_scream_inner() +
+std::string Screambot::generate_six_word_scream() const {
+	return generate_six_word_scream_inner() +
 		   " " +
-		   generate_three_word_scream_inner() +
+		   generate_six_word_scream_inner() +
 		   " " +
-		   generate_three_word_scream_inner();
+		   generate_six_word_scream_inner() +
+		   " " +
+		   generate_six_word_scream_inner() +
+		   " " +
+		   generate_six_word_scream_inner() +
+		   " " +
+		   generate_six_word_scream_inner();
 }
 
 
