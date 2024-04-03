@@ -1,0 +1,18 @@
+---
+BasedOnStyle: Google
+AlignAfterOpenBracket: BlockIndent
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackArguments: false
+BinPackParameters: false
+UseTab: Always
+IndentWidth: 4
+TabWidth: 4
+ContinuationIndentWidth: 4
+InsertBraces: true
+---
+Language: Cpp
+DerivePointerAlignment: false
+PointerAlignment: Right
+SpaceAfterCStyleCast: true
+IndentPPDirectives: BeforeHash
+NamespaceIndentation: All

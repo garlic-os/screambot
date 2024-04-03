@@ -1,9 +1,9 @@
 #pragma once
+#include <dpp/dpp.h>
+
 #include <cstdint>
 #include <string>
 #include <vector>
-#include <dpp/dpp.h>
-
 
 struct Config {
 	std::string token;
