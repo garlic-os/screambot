@@ -4,6 +4,10 @@
 # Secrets
 config.json
 
+# Clang artifacts
+.cache/
+compile_commands.json
+
 # Prerequisites
 *.d
 
