@@ -236,7 +236,7 @@ std::string generate_special_scream_inner(uint16_t body_length) {
 
 std::string Screambot::generate_special_scream(const dpp::message &message) const {
 	std::stringstream ss;
-	uint16_t word_count = message.content.length() + 1;
+	uint16_t word_count = std::ranges::count(message.content, ' ') + 2;
 	uint64_t body_length = rng::choose_number(
 		1,
 		100 / std::max(word_count, static_cast<uint16_t>(100))
