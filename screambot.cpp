@@ -113,10 +113,7 @@ Screambot::~Screambot() { delete m_client; }
 
 void Screambot::start() { m_client->start(dpp::start_type::st_wait); }
 
-void Screambot::scream(
-	const dpp::message &message,
-	bool bypass_rate_limit
-) {
+void Screambot::scream(const dpp::message &message, bool bypass_rate_limit) {
 	if (rate_limited(message.channel_id) && !bypass_rate_limit) {
 		std::cout << "- Failed to scream: rate limited" << std::endl;
 		return;
@@ -197,32 +194,29 @@ std::string Screambot::generate_scream() const {
 	return result;
 }
 
-
 std::string generate_special_scream_inner(uint16_t body_length) {
 	// Vanilla scream half the time
 	if (rng::chance(50)) {
 		return std::string(body_length, 'A');
 	}
 
-	static std::vector<std::string> body_choices = { "A", "O" };
-	std::string body = multiply_string(body_length, rng::choose_element(body_choices));
+	static std::vector<std::string> body_choices = {"A", "O"};
+	std::string body =
+		multiply_string(body_length, rng::choose_element(body_choices));
 
 	// Chance to wrap the message in one of these Markdown strings
-	static std::vector<std::string> formatter_choices = { "*", "**", "***" };
-	std::string formatter = rng::chance(50)
-		? ""
-		: rng::choose_element(formatter_choices);
+	static std::vector<std::string> formatter_choices = {"*", "**", "***"};
+	std::string formatter =
+		rng::chance(50) ? "" : rng::choose_element(formatter_choices);
 
 	// Chance to put one of these at the end of the message
-	static std::vector<std::string> suffix_choices = { "H", "RGH", "ER" };
-	std::string suffix = rng::chance(50)
-		? ""
-		: rng::choose_element(suffix_choices);
+	static std::vector<std::string> suffix_choices = {"H", "RGH", "ER"};
+	std::string suffix =
+		rng::chance(50) ? "" : rng::choose_element(suffix_choices);
 
 	// Chance to add exclamation points
-	std::string punctuation = rng::chance(50)
-		? ""
-		: multiply_string(rng::choose_number(0, 5), "!");
+	std::string punctuation =
+		rng::chance(50) ? "" : multiply_string(rng::choose_number(0, 5), "!");
 
 	std::string result = formatter + body + suffix + punctuation + formatter;
 
@@ -234,12 +228,12 @@ std::string generate_special_scream_inner(uint16_t body_length) {
 	return result;
 }
 
-std::string Screambot::generate_special_scream(const dpp::message &message) const {
+std::string Screambot::generate_special_scream(const dpp::message &message
+) const {
 	std::stringstream ss;
 	uint16_t word_count = std::ranges::count(message.content, ' ') + 2;
 	uint64_t body_length = rng::choose_number(
-		1,
-		100 / std::max(word_count, static_cast<uint16_t>(100))
+		1, 100 / std::max(word_count, static_cast<uint16_t>(100))
 	);
 	for (uint16_t i = 0; i < word_count; i++) {
 		ss << generate_special_scream_inner(body_length) << " ";
@@ -247,8 +241,7 @@ std::string Screambot::generate_special_scream(const dpp::message &message) cons
 	return ss.str();
 }
 
-
-bool Screambot::try_command(const dpp::message_create_t& event) {
+bool Screambot::try_command(const dpp::message_create_t &event) {
 	if (!event.msg.content.starts_with("!screambot")) {
 		return false;
 	}
