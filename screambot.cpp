@@ -194,7 +194,10 @@ std::string Screambot::generate_scream() const {
 	return result;
 }
 
-std::string generate_special_scream_inner(uint16_t body_length) {
+std::string generate_special_scream_inner(uint16_t word_count) {
+	uint16_t body_length = rng::choose_number(
+		1, 100 / std::max(word_count, static_cast<uint16_t>(100))
+	);
 	// Vanilla scream half the time
 	if (rng::chance(50)) {
 		return std::string(body_length, 'A');
@@ -232,11 +235,8 @@ std::string Screambot::generate_special_scream(const dpp::message &message
 ) const {
 	std::stringstream ss;
 	uint16_t word_count = std::ranges::count(message.content, ' ') + 2;
-	uint64_t body_length = rng::choose_number(
-		1, 100 / std::max(word_count, static_cast<uint16_t>(100))
-	);
 	for (uint16_t i = 0; i < word_count; i++) {
-		ss << generate_special_scream_inner(body_length) << " ";
+		ss << generate_special_scream_inner(word_count) << " ";
 	}
 	return ss.str();
 }
