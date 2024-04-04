@@ -85,24 +85,24 @@ Screambot::Screambot(const Config *config) {
 		}
 		if (mentions_user(event.msg, m_client->me.id)) {
 			std::cout << "Pung by " << tag(event.msg.author) << std::endl;
-			scream(event.msg.channel_id);
+			scream(event.msg);
 			return;
 		}
 		if (contains_scream(event.msg)) {
 			std::cout << "Screamed at by " << tag(event.msg.author)
 					  << std::endl;
-			scream(event.msg.channel_id);
+			scream(event.msg);
 			return;
 		}
 		if (event.msg.is_dm()) {
 			std::cout << "Received a DM from " << tag(event.msg.author) << ": "
 					  << event.msg.content << std::endl;
-			scream(event.msg.channel_id);
+			scream(event.msg);
 			return;
 		}
 		if (random_reply_chance(event.msg.channel_id)) {
 			std::cout << "Randomly decided to scream" << std::endl;
-			scream(event.msg.channel_id);
+			scream(event.msg);
 			return;
 		}
 		log_received_message(event.msg);
@@ -114,24 +114,24 @@ Screambot::~Screambot() { delete m_client; }
 void Screambot::start() { m_client->start(dpp::start_type::st_wait); }
 
 void Screambot::scream(
-	const dpp::snowflake &channel_id,
+	const dpp::message &message,
 	bool bypass_rate_limit
 ) {
-	if (rate_limited(channel_id) && !bypass_rate_limit) {
+	if (rate_limited(message.channel_id) && !bypass_rate_limit) {
 		std::cout << "- Failed to scream: rate limited" << std::endl;
 		return;
 	}
-	static dpp::snowflake three_word_channel_id = 1031723209701199872;
-	if (channel_id == three_word_channel_id) {
+	constexpr dpp::snowflake special_channel_id = 1031723209701199872;
+	if (message.channel_id == special_channel_id) {
 		m_client->message_create(
-			dpp::message(channel_id, generate_three_word_scream())
+			dpp::message(message.channel_id, generate_special_scream(message))
 		);
 	} else {
 		m_client->message_create(
-			dpp::message(channel_id, generate_scream())
+			dpp::message(message.channel_id, generate_scream())
 		);
 	}
-	log_sent_message(channel_id);
+	log_sent_message(message.channel_id);
 }
 
 bool Screambot::is_admin(const dpp::snowflake &user_id) const {
@@ -198,9 +198,7 @@ std::string Screambot::generate_scream() const {
 }
 
 
-std::string generate_three_word_scream_inner() {
-	uint64_t body_length = rng::choose_number(1, 100 / 3);
-
+std::string generate_special_scream_inner(uint16_t body_length) {
 	// Vanilla scream half the time
 	if (rng::chance(50)) {
 		return std::string(body_length, 'A');
@@ -236,12 +234,17 @@ std::string generate_three_word_scream_inner() {
 	return result;
 }
 
-std::string Screambot::generate_three_word_scream() const {
-	return generate_three_word_scream_inner() +
-		   " " +
-		   generate_three_word_scream_inner() +
-		   " " +
-		   generate_three_word_scream_inner();
+std::string Screambot::generate_special_scream(const dpp::message &message) const {
+	std::stringstream ss;
+	uint16_t word_count = message.content.length() + 1;
+	uint64_t body_length = rng::choose_number(
+		1,
+		100 / std::max(word_count, static_cast<uint16_t>(100))
+	);
+	for (uint16_t i = 0; i < word_count; i++) {
+		ss << generate_special_scream_inner(body_length) << " ";
+	}
+	return ss.str();
 }
 
 
@@ -276,8 +279,9 @@ bool Screambot::try_command(const dpp::message_create_t& event) {
 			);
 			return true;
 		}
-		dpp::snowflake channel_id = args[2];
-		scream(channel_id, true);
+		// Broken but I don't care
+		// dpp::snowflake channel_id = args[2];
+		scream(event.msg, true);
 		return true;
 	}
 	if (args[1] == "say") {
