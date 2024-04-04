@@ -29,8 +29,8 @@ int main(int argc, char *argv[]) {
 		Screambot screambot(&config);
 		screambot.start();
 
-	} catch (const std::exception &e) {
-		std::cerr << e.what() << std::endl;
+	} catch (const std::exception &err) {
+		std::cerr << err.what() << std::endl;
 		return 1;
 	} catch (...) {
 		std::cerr << "Unknown exception" << std::endl;

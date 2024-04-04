@@ -50,7 +50,7 @@ std::vector<time_t> *get_or_create(
 ) {
 	try {
 		return &(map.at(key));
-	} catch (std::out_of_range &e) {
+	} catch (const std::out_of_range & /*err*/) {
 		map[key] = {};
 		return &(map[key]);
 	}
@@ -248,8 +248,8 @@ bool Screambot::random_reply_chance(const dpp::snowflake &channel_id) const {
 	if (m_received_activity_log.contains(channel_id)) {
 		activity_level = m_received_activity_log.at(channel_id).size();
 	}
-	const double a = 2.55;
-	const uint64_t b = 190;
+	constexpr double a = 2.55;
+	constexpr uint64_t b = 190;
 	double reply_chance = std::min(std::pow(activity_level, a) / b, 50.0);
 	return rng::chance(reply_chance);
 }
