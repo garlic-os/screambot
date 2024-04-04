@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace rng {
-	int64_t choose_number(int64_t min, int64_t max) {
+	inline int64_t choose_number(int64_t min, int64_t max) {
 		static std::random_device rd;
 		static std::mt19937 gen(rd());
 		std::uniform_int_distribution<> dis(min, max);
@@ -16,7 +16,7 @@ namespace rng {
 		return vec[choose_number(0, vec.size() - 1)];
 	}
 
-	bool chance(double percent) {
+	inline bool chance(double percent) {
 		return choose_number(0, 100) < percent;
 	}
 }
