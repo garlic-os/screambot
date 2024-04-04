@@ -267,7 +267,6 @@ void Screambot::log_received_message(const dpp::message &message) {
 }
 
 void Screambot::log_sent_message(const dpp::snowflake &channel_id) {
-	const auto now = system_clock::now();
-	const std::time_t timestamp = system_clock::to_time_t(now);
+	std::time_t timestamp = system_clock::to_time_t(system_clock::now());
 	m_sent_activity_log[channel_id] = timestamp;
 }
