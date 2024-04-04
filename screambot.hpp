@@ -8,6 +8,7 @@
 
 #include "./config.hpp"
 
+
 class Screambot {
    private:
 	const Config *m_config;
