@@ -2,6 +2,8 @@
 #include <dpp/dpp.h>
 
 #include <ctime>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "./config.hpp"
