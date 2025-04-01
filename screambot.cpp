@@ -155,14 +155,10 @@ bool Screambot::rate_limited(const dpp::snowflake &channel_id) const {
 std::string Screambot::generate_scream() const {
 	uint64_t body_length = rng::choose_number(1, 100);
 
-	// Vanilla scream half the time
-	if (rng::chance(50)) {
-		return std::string(body_length, 'A');
-	}
+	std::string prefix =
+		rng::chance(25) ? "" : multiply_string(rng::choose_number(0, 3), "B");
 
-	static std::vector<std::string> body_choices = {"A", "O"};
-	std::string body =
-		multiply_string(body_length, rng::choose_element(body_choices));
+	std::string body = multiply_string(body_length, "A");
 
 	// Chance to wrap the message in one of these Markdown strings
 	static std::vector<std::string> formatter_choices = {"*", "**", "***"};
@@ -170,15 +166,15 @@ std::string Screambot::generate_scream() const {
 		rng::chance(50) ? "" : rng::choose_element(formatter_choices);
 
 	// Chance to put one of these at the end of the message
-	static std::vector<std::string> suffix_choices = {"H", "RGH", "ER"};
 	std::string suffix =
-		rng::chance(50) ? "" : rng::choose_element(suffix_choices);
+		rng::chance(25) ? "" : multiply_string(rng::choose_number(0, 3), "H");
 
 	// Chance to add exclamation points
 	std::string punctuation =
 		rng::chance(50) ? "" : multiply_string(rng::choose_number(0, 5), "!");
 
-	std::string result = formatter + body + suffix + punctuation + formatter;
+	std::string result =
+		formatter + prefix + body + suffix + punctuation + formatter;
 
 	// Chance for lowercase
 	if (rng::chance(12.5)) {

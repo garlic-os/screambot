@@ -3,7 +3,7 @@ OBJECTS := $(SOURCES:.cpp=.o)
 EXECUTABLE := screambot
 
 CC := g++
-COMMONFLAGS := -Wall -Wextra -Wpedantic -std=c++20
+COMMONFLAGS := -Wall -Wextra -Wpedantic -std=c++20 -D DPP_USE_EXTERNAL_JSON
 CFLAGS := -O3 $(COMMONFLAGS)
 DEBUGFLAGS := -g $(COMMONFLAGS)
 LDFLAGS := -ldpp
