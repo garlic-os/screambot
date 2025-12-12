@@ -73,7 +73,7 @@ Screambot::Screambot(const Config *config) {
 		m_client->set_presence(dpp::presence(
 			dpp::presence_status::ps_online,
 			dpp::activity_type::at_game,
-			"BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+			"OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOER"
 		));
 	});
 
