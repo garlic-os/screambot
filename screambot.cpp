@@ -9,7 +9,6 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <vector>
 
 #include "./rng.hpp"
 
@@ -26,6 +25,11 @@ bool mentions_user(const dpp::message &msg, const dpp::snowflake &user_id) {
 
 bool contains_scream(const dpp::message &msg) {
 	return boost::algorithm::to_lower_copy(msg.content).find("aaa") !=
+		   std::string::npos;
+}
+
+bool contains_ooo(const dpp::message &msg) {
+	return boost::algorithm::to_lower_copy(msg.content).find("ooo") !=
 		   std::string::npos;
 }
 
@@ -85,24 +89,29 @@ Screambot::Screambot(const Config *config) {
 		}
 		if (mentions_user(event.msg, m_client->me.id)) {
 			std::cout << "Pung by " << tag(event.msg.author) << std::endl;
-			scream(event.msg.channel_id);
+			ooo(event.msg.channel_id);
 			return;
 		}
 		if (contains_scream(event.msg)) {
 			std::cout << "Screamed at by " << tag(event.msg.author)
 					  << std::endl;
-			scream(event.msg.channel_id);
+			ooo(event.msg.channel_id);
+			return;
+		}
+		if (contains_ooo(event.msg)) {
+			std::cout << tag(event.msg.author) << "ooo'd " << std::endl;
+			ooo(event.msg.channel_id);
 			return;
 		}
 		if (event.msg.is_dm()) {
 			std::cout << "Received a DM from " << tag(event.msg.author) << ": "
 					  << event.msg.content << std::endl;
-			scream(event.msg.channel_id);
+			ooo(event.msg.channel_id);
 			return;
 		}
 		if (random_reply_chance(event.msg.channel_id)) {
 			std::cout << "Randomly decided to scream" << std::endl;
-			scream(event.msg.channel_id);
+			ooo(event.msg.channel_id);
 			return;
 		}
 		log_received_message(event.msg);
@@ -113,15 +122,15 @@ Screambot::~Screambot() { delete m_client; }
 
 void Screambot::start() { m_client->start(dpp::start_type::st_wait); }
 
-void Screambot::scream(
+void Screambot::ooo(
 	const dpp::snowflake &channel_id,
 	bool bypass_rate_limit
 ) {
 	if (rate_limited(channel_id) && !bypass_rate_limit) {
-		std::cout << "- Failed to scream: rate limited" << std::endl;
+		std::cout << "- Failed to ooo: rate limited" << std::endl;
 		return;
 	}
-	m_client->message_create(dpp::message(channel_id, generate_scream()));
+	m_client->message_create(dpp::message(channel_id, generate_ooo()));
 	log_sent_message(channel_id);
 }
 
@@ -152,29 +161,28 @@ bool Screambot::rate_limited(const dpp::snowflake &channel_id) const {
 	return duration * 1000 < m_config->rate_limit_ms;
 };
 
-std::string Screambot::generate_scream() const {
+std::string Screambot::generate_ooo() const {
 	uint64_t body_length = rng::choose_number(1, 100);
 
-	std::string prefix =
-		rng::chance(25) ? "" : multiply_string(rng::choose_number(0, 3), "B");
-
-	std::string body = multiply_string(body_length, "A");
+	std::string ooo = multiply_string(body_length, "O");
 
 	// Chance to wrap the message in one of these Markdown strings
 	static std::vector<std::string> formatter_choices = {"*", "**", "***"};
 	std::string formatter =
 		rng::chance(50) ? "" : rng::choose_element(formatter_choices);
 
-	// Chance to put one of these at the end of the message
 	std::string suffix =
-		rng::chance(25) ? "" : multiply_string(rng::choose_number(0, 3), "H");
+		rng::chance(50)
+		? multiply_string(rng::choose_number(1, 3), "E")
+		+ multiply_string(rng::choose_number(1, 5), "R")
+		: "";
 
 	// Chance to add exclamation points
 	std::string punctuation =
 		rng::chance(50) ? "" : multiply_string(rng::choose_number(0, 5), "!");
 
 	std::string result =
-		formatter + prefix + body + suffix + punctuation + formatter;
+		formatter + ooo + suffix + punctuation + formatter;
 
 	// Chance for lowercase
 	if (rng::chance(12.5)) {
@@ -193,7 +201,7 @@ bool Screambot::try_command(const dpp::message_create_t &event) {
 
 	if (args[1] == "info" || args[1] == "help" || args[1] == "invite") {
 		event.send(
-			generate_scream() +
+			generate_ooo() +
 			"\n"
 			"CODE: https://github.com/garlic-os/screambot-plus-plus\n"
 			"INVITE: "
@@ -216,7 +224,7 @@ bool Screambot::try_command(const dpp::message_create_t &event) {
 			return true;
 		}
 		dpp::snowflake channel_id = args[2];
-		scream(channel_id, true);
+		ooo(channel_id, true);
 		return true;
 	}
 	if (args[1] == "say") {

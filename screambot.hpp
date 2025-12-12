@@ -23,10 +23,10 @@ class Screambot {
 
 	void start();
 	void
-	scream(const dpp::snowflake &channel_id, bool bypass_rate_limit = false);
+	ooo(const dpp::snowflake &channel_id, bool bypass_rate_limit = false);
 	void log_received_message(const dpp::message &message);
 	void log_sent_message(const dpp::snowflake &channel_id);
-	std::string generate_scream() const;
+	std::string generate_ooo() const;
 	bool try_command(const dpp::message_create_t &event);
 	bool is_admin(const dpp::snowflake &user_id) const;
 	bool in_do_not_reply(const dpp::snowflake &user_id) const;
