@@ -162,7 +162,7 @@ bool Screambot::rate_limited(const dpp::snowflake &channel_id) const {
 };
 
 std::string Screambot::generate_ooo() const {
-	uint64_t body_length = rng::choose_number(1, 100);
+	uint64_t body_length = rng::choose_number(2, 100);
 
 	std::string ooo = multiply_string(body_length, "O");
 
